@@ -1,0 +1,50 @@
+{% load bootstrap5 %}
+
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{% bootstrap_messages %}
+
+
+
+{% block content %}
+{% if user.is_authenticated %}
+  
+
+  <div class="container">
+    <h2 class="text-center">Hi {{ user.username }}!</h2>
+    <p><a href="{% url 'logout' %}">Log Out</a></p>
+    <div class="card text-center">
+      <div class="card-title">
+        <h1>Dashboard</h1>
+      </div>
+        <div class="card-body">
+          
+            <div class="card">
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item">{{ total_count }} Total Count</li>
+                  <li class="list-group-item">{{ skip_traced }} Skiptraced</li>
+                </ul>
+              </div>
+
+        </div>
+        <div class="card-footer text-muted">
+            <form enctype="multipart/form-data" method="post" action="/runner/configuration/" id="file-form">
+              {% csrf_token %}
+              <input type="file" name="runner_file" accept=".csv" {% if is_running %}disabled{% endif %} class="btn btn-secondary" onchange="document.getElementById('file-form').submit();">
+            </form>
+            <form enctype="multipart/form-data" method="post" action="/runner/configuration/" id="configuration-form">
+              {% csrf_token %}
+              <input type="hidden" name="should_run" value="{% if is_running %}false{% else %}true{% endif %}">
+              <a href="#" class="btn btn-{% if is_running %}warning{% else %}success{% endif %}" onclick="document.getElementById('configuration-form').submit();">{% if is_running %}Pause{% else %}Start{% endif %}</a>
+              <a href="{{ file_path }}" class="btn btn-primary" download>Download</a>
+            </form>
+        </div>
+      </div>
+</div>
+
+{% else %}
+  <p>You are not logged in</p>
+  <a href="{% url 'login' %}">Log In</a>
+{% endif %}
+{% endblock %}
